@@ -1,0 +1,27 @@
+version: '3'
+services:
+  server:
+    container_name: WRUApp-Backend
+    restart: always
+    build: .
+    volumes:
+      - .:/apps/WRUApp-Backend
+      - ./build:/apps/WRUApp-Backend/build
+    ports:
+      - '5000:5000'
+      - '9229:9229'
+    command: npm run start:dev
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo:4.0.16
+    volumes:
+      - 'dbdata:/data/db'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: bruce
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+    ports:
+      - '27017:27017'
+volumes:
+  dbdata:
