@@ -3,6 +3,7 @@ import io from 'socket.io';
 import mongoose from 'mongoose';
 import AnonymousUserAPI from './apis/anonymous-user';
 import { GroupAPIs } from './apis/group';
+import { InvitaionAPIs } from './apis/invitation';
 import rootSocketService from './socket-services/root-socket-service';
 
 const server = express();
@@ -36,7 +37,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
 	// we're connected!
 	console.log("we're connected to databse wru-db!");
-	server.use('/', [AnonymousUserAPI, GroupAPIs]);
+	server.use('/', [AnonymousUserAPI, GroupAPIs, InvitaionAPIs]);
 	socket.on('connection', rootSocketService);
 });
 

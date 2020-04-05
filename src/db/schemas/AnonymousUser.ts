@@ -6,6 +6,8 @@ export interface IAnonymousUser extends Document {
 	longitude: number;
 	groupIds?: [string];
 	imageUrl?: string;
+	userCode: string;
+	invitationIds?: [string];
 }
 
 const anonymousUser = new Schema({
@@ -13,7 +15,9 @@ const anonymousUser = new Schema({
 	latitude: { type: Number, required: true, max: 200, min: -200 },
 	longitude: { type: Number, required: true, max: 200, min: -200 },
 	groupIds: { type: [String] },
-	imageUrl: { type: String }
+	imageUrl: { type: String },
+	userCode: { type: String },
+	invitationIds: { type: [String] }
 });
 
 export const AnonymousUser: Model<IAnonymousUser> = model<IAnonymousUser>(

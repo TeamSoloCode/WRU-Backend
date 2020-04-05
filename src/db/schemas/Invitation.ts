@@ -1,25 +1,22 @@
 import { Schema, Document, Model, model } from 'mongoose';
+import { INVITATION_STATUS } from '../../constants/server-constants';
 
 export interface IInvitation extends Document {
-	userId: string;
-}
-
-export interface IInviter extends Document {
 	inviterId: string;
+	invitedUserCode: string;
 	groupId: string;
-	message: string;
+	message?: string;
+	status?: INVITATION_STATUS.DENIED_STATUS | INVITATION_STATUS.ACCEPTED_STATUS | INVITATION_STATUS.WAITING_STATUS;
+	createTime?: number;
 }
-
-const inviter = new Schema<IInviter>({
-	inviterId: { type: String, required: true, maxlength: 24 },
-	groupId: { type: String, required: true, maxlength: 24 },
-	message: { type: String, maxlength: 512 },
-	isResponsed: { type: Boolean, default: false }
-});
 
 const invitation = new Schema({
-	userId: { type: String, maxlength: 24 },
-	invitations: { type: [inviter] }
+	inviterId: { type: String, required: true, maxlength: 24 },
+	invitedUserCode: { type: String, required: true, maxlength: 24 },
+	groupId: { type: String, required: true, maxlength: 24 },
+	message: { type: String, maxlength: 512 },
+	status: { type: String, default: INVITATION_STATUS.WAITING_STATUS },
+	createTime: { type: Number, default: new Date().getTime() }
 });
 
-export const Group: Model<IInvitation> = model<IInvitation>('Invitation', invitation, 'Invitations');
+export const Invitation: Model<IInvitation> = model<IInvitation>('Invitation', invitation, 'Invitations');
