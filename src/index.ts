@@ -15,14 +15,14 @@ server.use(bodyParser.json()); // to support JSON-encoded bodies
 server.use(
 	bodyParser.urlencoded({
 		// to support URL-encoded bodies
-		extended: true
+		extended: true,
 	})
 );
 
 server.use(express.json()); // to support JSON-encoded bodies
 // app.use(express.urlencoded()); // to support URL-encoded bodies
 
-server.use(function(_: Request, res: Response, next: any) {
+server.use(function (_: Request, res: Response, next: any) {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Headers', 'X-Requested-With');
 	res.header('Access-Control-Allow-Headers', 'Content-Type');
@@ -30,17 +30,25 @@ server.use(function(_: Request, res: Response, next: any) {
 	next();
 });
 
-mongoose.connect('mongodb://bruce:1234@mongo:27017/wru-db', { useNewUrlParser: true, useUnifiedTopology: true });
-const db = mongoose.connection;
+mongoose.connect(
+	'mongodb://bruce:1234@mongodb-primary:27017,mongo-replica-1:27018/wru-db?replicaSet=rs0&retryWrites=true',
+	{
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+		useFindAndModify: true,
+	}
+);
+
+export const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
+db.once('open', function () {
 	// we're connected!
 	console.log("we're connected to databse wru-db!");
 	server.use('/', [AnonymousUserAPI, GroupAPIs, InvitaionAPIs]);
 	socket.on('connection', rootSocketService);
 });
 
-http.listen(5000, function() {
+http.listen(5000, function () {
 	console.log('listening on *:5000');
 });

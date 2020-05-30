@@ -6,3 +6,10 @@
 export const responseData = (resCode: number, resResult: any) => {
 	return { resCode, resResult };
 };
+
+export interface IGetAnonymousGroupMemberResponse {
+	enableShowLocation: boolean;
+	_id: string;
+	name: string;
+	imageUrl?: string;
+}

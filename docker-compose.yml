@@ -12,16 +12,43 @@ services:
       - '9229:9229'
     command: npm run start:dev
     links:
-      - mongo
-  mongo:
+      - mongodb-primary
+  mongodb-primary:
     container_name: mongo
     image: mongo:4.0.16
     volumes:
       - 'dbdata:/data/db'
     environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_ADVERTISED_HOSTNAME: mongodb-primary
       MONGO_INITDB_ROOT_USERNAME: bruce
       MONGO_INITDB_ROOT_PASSWORD: 1234
+    expose:
+      - 27017
     ports:
-      - '27017:27017'
+      - 27017:27017
+    restart: always
+    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
+
+  mongodb-secondary:
+    container_name: mongo-replica-1
+    image: mongo:4.0.16
+    depends_on:
+      - mongodb-primary
+    environment:
+      MONGODB_ADVERTISED_HOSTNAME: mongodb-secondary
+      MONGODB_REPLICA_SET_MODE: secondary
+      MONGODB_PRIMARY_HOST: mongodb-primary
+      # MONGODB_PRIMARY_PORT_NUMBER: 27017
+      # MONGODB_PRIMARY_ROOT_PASSWORD: password123
+      # MONGODB_REPLICA_SET_KEY: replicasetkey123
+    expose:
+      - 27017
+    ports:
+      - 27018:27017
+    restart: always
+    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
 volumes:
   dbdata:
+# rs.initiate(   {     _id : 'rs0',     members: [       { _id : 0, host : "mongo:27017" },       { _id : 1, host : "mongo-replica-1:27018" }     ]   } )
+

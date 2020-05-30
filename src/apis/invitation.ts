@@ -1,5 +1,9 @@
 import express, { Request, Response } from 'express';
-import { createAnonymousUserInvitation, answerInvitation } from '../db/services/invitation-service';
+import {
+	createAnonymousUserInvitation,
+	answerInvitation,
+	getGetUserInvitation,
+} from '../db/services/invitation-service';
 import { responseData } from './response-type';
 import { SUCCESSFUL, FAILURE } from '../constants/response-code';
 
@@ -15,6 +19,13 @@ router.post('/CreateNewInvitation', async (req: Request, res: Response) => {
 router.post('/AnswerInvitation', async (req: Request, res: Response) => {
 	const { invitationId, status, userId } = req.body;
 	const result = await answerInvitation(invitationId, userId, status);
+	if (result.err) res.status(200).json(responseData(FAILURE, result));
+	res.status(200).json(responseData(SUCCESSFUL, result));
+});
+
+router.get('/GetUserInvitations', async (req: Request, res: Response) => {
+	const { userId } = req.query;
+	const result = await getGetUserInvitation(userId);
 	if (result.err) res.status(200).json(responseData(FAILURE, result));
 	res.status(200).json(responseData(SUCCESSFUL, result));
 });
