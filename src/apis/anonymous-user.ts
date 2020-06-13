@@ -15,9 +15,22 @@ const router = express.Router();
 
 router.get('/GetAnonymousGroupMembers', async (req, res) => {
 	const { userId, groupId } = req.query;
-	const result = await getAnonymousGroupMembers(userId, groupId);
-	if (result.err) res.status(200).json(responseData(FAILURE, result));
-	res.status(200).json(responseData(SUCCESSFUL, result));
+
+	if(typeof userId == 'string'  && typeof groupId == 'string')
+		{
+			const result = await getAnonymousGroupMembers(userId, groupId);
+			if (result.err) res.status(200).json(responseData(FAILURE, result));
+			res.status(200).json(responseData(SUCCESSFUL, result));
+		}
+		else{
+			res.status(200).json(responseData(FAILURE, {
+				err: true,
+				message: 'Error: userId and groupId must be a string',
+				data: null
+			}));
+		}
+
+
 });
 
 router.post('/CreateAnonymousUser', async (req: Request, res: Response) => {
@@ -52,16 +65,42 @@ router.post('/UpdateLocation', async (req: Request, res: Response) => {
 
 router.get('/GetAnonymousUserInfomation', async (req: Request, res: Response) => {
 	const { userId } = req.query;
-	const result = await getAnonymousUserInfomation(userId);
-	if (result.err) res.status(200).json(responseData(FAILURE, result));
-	res.status(200).json(responseData(SUCCESSFUL, result));
+	if(typeof userId == 'string')
+	{	
+		const result = await getAnonymousUserInfomation(userId);
+		if (result.err) 
+			res.status(200).json(responseData(FAILURE, result));
+		res.status(200).json(responseData(SUCCESSFUL, result));
+	}
+	else
+	{
+		res.status(200).json(responseData(FAILURE, {
+			err: true,
+			message: "Error: userId must be a string",
+			data: null
+		}))
+	}
 });
 
 router.get('/GetAnonymousUserGroups', async (req: Request, res: Response) => {
 	const { userId } = req.query;
-	const result = await getAnonymousUserGroup(userId);
-	if (result.err) res.status(200).json(responseData(FAILURE, result));
-	res.status(200).json(responseData(SUCCESSFUL, result));
+	
+	
+	if(typeof userId == 'string')
+	{	
+		const result = await getAnonymousUserGroup(userId);
+		if (result.err) 
+			res.status(200).json(responseData(FAILURE, result));
+		res.status(200).json(responseData(SUCCESSFUL, result));
+	}
+	else
+	{
+		res.status(200).json(responseData(FAILURE, {
+			err: true,
+			message: "Error: userId must be a string",
+			data: null
+		}))
+	}
 });
 
 export default router;

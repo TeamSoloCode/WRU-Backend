@@ -5,7 +5,7 @@ import { AnonymousUser, IAnonymousUser } from '../schemas/AnonymousUser';
 export async function isMemberOfTheGroup(userId: string, groupId: string): Promise<Boolean> {
 	try {
 		if (!isValidObjectId(userId) || !isValidObjectId(groupId)) return false;
-		const result = await Group.findById(groupId).lean();
+		const result = await Group.findById(groupId).lean() as IGroup;
 		if (!result) return false;
 		const group: IGroup = result;
 		if (group.members !== undefined) {
@@ -33,7 +33,7 @@ export async function isLeaderOfTheGroup(userId: string, groupId: string) {
 
 export async function areUsersInviteThemseft(userId: String, invitedUserCode: string): Promise<Boolean> {
 	try {
-		const inviterInfo = await AnonymousUser.findById(userId).lean();
+		const inviterInfo = await AnonymousUser.findById(userId).lean() as IAnonymousUser;
 		if (!inviterInfo) return false;
 		const inviter: IAnonymousUser = inviterInfo;
 		if (inviter.userCode === invitedUserCode) return false;

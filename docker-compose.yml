@@ -1,54 +1,47 @@
 version: '3'
-services:
-  server:
-    container_name: WRUApp-Backend
-    restart: always
-    build: .
-    volumes:
-      - .:/apps/WRUApp-Backend
-      - ./build:/apps/WRUApp-Backend/build
-    ports:
-      - '5000:5000'
-      - '9229:9229'
-    command: npm run start:dev
-    links:
-      - mongodb-primary
-  mongodb-primary:
-    container_name: mongo
-    image: mongo:4.0.16
-    volumes:
-      - 'dbdata:/data/db'
-    environment:
-      MONGODB_REPLICA_SET_MODE: primary
-      MONGODB_ADVERTISED_HOSTNAME: mongodb-primary
-      MONGO_INITDB_ROOT_USERNAME: bruce
-      MONGO_INITDB_ROOT_PASSWORD: 1234
-    expose:
-      - 27017
-    ports:
-      - 27017:27017
-    restart: always
-    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
 
+services:
+  mongodb-primary:
+    image: 'bitnami/mongodb:latest'
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-primary
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_PASSWORD=1234
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+      - MONGODB_REPLICA_SET_NAME=rs0
+    volumes:
+      - 'mongodb_master_data:/bitnami'
+    ports:
+      - "37017:27017"
   mongodb-secondary:
-    container_name: mongo-replica-1
-    image: mongo:4.0.16
+    image: 'bitnami/mongodb:latest'
     depends_on:
       - mongodb-primary
     environment:
-      MONGODB_ADVERTISED_HOSTNAME: mongodb-secondary
-      MONGODB_REPLICA_SET_MODE: secondary
-      MONGODB_PRIMARY_HOST: mongodb-primary
-      # MONGODB_PRIMARY_PORT_NUMBER: 27017
-      # MONGODB_PRIMARY_ROOT_PASSWORD: password123
-      # MONGODB_REPLICA_SET_KEY: replicasetkey123
-    expose:
-      - 27017
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-secondary
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_PRIMARY_HOST=mongodb-primary
+      - MONGODB_PRIMARY_PORT_NUMBER=27017
+      - MONGODB_PRIMARY_ROOT_PASSWORD=1234
+      - MONGODB_REPLICA_SET_NAME=rs0
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
     ports:
-      - 27018:27017
-    restart: always
-    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
-volumes:
-  dbdata:
-# rs.initiate(   {     _id : 'rs0',     members: [       { _id : 0, host : "mongo:27017" },       { _id : 1, host : "mongo-replica-1:27018" }     ]   } )
+      - "37018:27017"
 
+  mongodb-arbiter:
+    image: 'bitnami/mongodb:latest'
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-arbiter
+      - MONGODB_REPLICA_SET_MODE=arbiter
+      - MONGODB_PRIMARY_HOST=mongodb-primary
+      - MONGODB_PRIMARY_PORT_NUMBER=27017
+      - MONGODB_PRIMARY_ROOT_PASSWORD=1234
+      - MONGODB_REPLICA_SET_NAME=rs0
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+    ports:
+      - "37019:27017"
+volumes:
+  mongodb_master_data:
+    driver: local
