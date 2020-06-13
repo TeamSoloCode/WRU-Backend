@@ -25,9 +25,21 @@ router.post('/AnswerInvitation', async (req: Request, res: Response) => {
 
 router.get('/GetUserInvitations', async (req: Request, res: Response) => {
 	const { userId } = req.query;
-	const result = await getGetUserInvitation(userId);
-	if (result.err) res.status(200).json(responseData(FAILURE, result));
-	res.status(200).json(responseData(SUCCESSFUL, result));
+	if(typeof userId == 'string')
+	{	
+		const result = await getGetUserInvitation(userId);
+		if (result.err)
+			res.status(200).json(responseData(FAILURE, result));
+		res.status(200).json(responseData(SUCCESSFUL, result));
+	}
+	else
+	{
+		res.status(200).json(responseData(FAILURE, {
+			err: true,
+			message: "Error: userId must be a string",
+			data: null
+		}))
+	}
 });
 
 export const InvitaionAPIs = router;

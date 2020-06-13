@@ -97,7 +97,7 @@ export async function getGetUserInvitation(userId: string): Promise<IResultType>
 	try {
 		if (!isValidObjectId(userId)) return { err: true, message: 'Invalid user id' };
 
-		const userInfo = await AnonymousUser.findById(userId).lean();
+		const userInfo = await AnonymousUser.findById(userId).lean() as IAnonymousUser;
 		if (!userInfo) return { err: true, message: 'User is not exists !' };
 		const user: IAnonymousUser = userInfo;
 

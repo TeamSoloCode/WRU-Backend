@@ -54,9 +54,8 @@ export async function deleteAnonymousGroup(userId: string, groupId: string): Pro
 		if (!isValidObjectId(userId)) return { err: true, message: 'Invalid user id !!' };
 		if (!isValidObjectId(groupId)) return { err: true, message: 'Invalid group id !!' };
 		if (!(await isLeaderOfTheGroup(userId, groupId))) return { err: true, message: 'You are not leader of this group' };
-		const groupInfo = await Group.findById(groupId).lean();
+		const groupInfo = await Group.findById(groupId).lean() as IGroup;
 		if (!groupInfo) return { err: true, message: 'Group is not exist !' };
-
 		const group: IGroup = groupInfo;
 		const findMemberPromises: any = [];
 		group.members?.map((member) => findMemberPromises.push(AnonymousUser.findById(member._id)));
