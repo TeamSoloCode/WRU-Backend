@@ -35,7 +35,7 @@ export async function loginWithAnonymousAccount(email: string, password: string)
 	}
 }
 
-export async function getAnonymousUserInfomation(userId: string): Promise<IResultType> {
+export async function getAnonymousUserInfomation(userId: string  | string[] | QueryString.ParsedQs | QueryString.ParsedQs[] | undefined): Promise<IResultType> {
 	try {
 		const userInfo = await AnonymousUser.findById(userId).lean();
 		if (!userInfo) return { err: true, message: 'User is not exist !' };
