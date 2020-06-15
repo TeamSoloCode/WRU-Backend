@@ -31,7 +31,7 @@ server.use(function (_: Request, res: Response, next: any) {
 });
 
 mongoose.connect(
-	'mongodb://bruce:1234@mongo-replica-1:27018,mongo:27017/wru-db?replicaSet=rs0&retryWrites=true',
+	'mongodb://mongo-replica-1:27018/wru-db',
 	{
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
